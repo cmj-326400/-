@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+				font-family: 'Poppins', sans-serif;
+			}
+			
+			body{
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				min-height: 100vh;
+				background-image: url("../img/壁画背景.jpg");
+				background-size: cover;
+				image-rendering: auto;
+				overflow: hidden;
+			}
+			
+			/* 新增：右上角logo样式 */
+			.logo-container {
+				position: fixed;
+				top: 20px;
+				left: 20px;
+				z-index: 1000;
+				transition: all 0.5s ease;
+			}
+			.logo-img {
+				width: 80px;
+				height: 80px;
+				border-radius: 50%;
+				object-fit: cover;
+				border: 2px solid rgba(255, 215, 0, 1);
+				box-shadow: 0 4px 15px rgba(255, 215, 0, 1);
+				cursor: pointer;
+				transition: all 0.3s ease;
+			}
+			.logo-img:hover {
+				transform: scale(1.1) rotate(10deg);
+				box-shadow: 0 6px 20px rgba(255, 215, 0, 1);
+				border-color: #ffff7f;
+			}
+			
+			.logo-img:active {
+				transform: scale(0.95);
+			}
+			
+			@keyframes pulse {
+				0% { transform: scale(1); }
+				50% { transform: scale(1.20); }
+				100% { transform: scale(1); }
+			}
+			
+			.pulse {
+				animation: pulse 2s infinite;
+			}
+			
+			.container{
+				position: relative;
+				width: 100%;
+				display: flex;
+				justify-content: center;/*水平居中*/
+				align-items: center;/*竖直方向居中*/
+			}
+			
+			.container .card{
+				position: absolute;/*将卡片重叠在一起*/
+				width: 240px;
+				height: 360px;/*统一卡片的高度和宽度*/
+				background-color: #CC9966; /*卡片背景颜色*/
+				border-radius: 8px; /*卡片圆角*/
+				display: flex;
+				/*justify-content: center;
+				align-items: center;*/    /*确定字体文字在正中间*/
+				/*color: rgba(0, 0, 0, 0);/*卡片上的字为透明*/ 
+				/*font-size: 8em;
+				font-weight: 700;*/  /*文字的大小*/
+				border: 10px solid rgba(0, 0, 0, .1);  /*card的边框和颜色*/
+				transition: .5s; /*变化的延时*/
+				transform-origin: 50% 100%; /*以中心为基点进行旋转*/
+				/*filter: hue-rotate(calc(var(--i) * 60deg));/*改变每张卡片的颜色，hue-rotate改变颜色*/
+				box-shadow: 0 15px 50px rgba(0,0,0,.1);
+				overflow: hidden;/*确保图片补超出卡片*/
+				perspective: 1000px;
+				transform-style: preserve-3d;
+			}
+			
+			.container .card img{
+				width: 100%;
+				height: 100%;
+				object-fit: cover;/*图片填充并保持比例*/
+				transition: .5s;
+			}
+			
+			.container:hover .card{
+				transform: rotate(calc(var(--i) * 5deg))
+				           translate(calc(var(--i) * 120px), -50px);/*使得卡片在鼠标放上去的时候会旋转*/
+				box-shadow: 0 15px 50px rgba(0,0,0,.25);
+				color: rgba(0,0,0,.25);/*鼠标移上去后卡片的字变成半透明*/
+				cursor: pointer;/*添加小手*/
+			}
+			.container:hover .card:not(:hover){
+				background-color: #333;
+			}
+			.container .card:hover{
+				translate: calc(var(--i) * 20px) -50px;/*点击卡片，卡片会上浮*/
+				z-index: 999;/*确保点击的卡片在最上面*/
+			}
+			
+		</style>
+	</head>
+	<body>
+		<div class="logo-container">
+			<a href="../目录.html" target="_blank">
+				<img src="../img/壁画返回图标.png" alt="敦煌艺术" class="logo-img pulse">
+			</a>
+		</div>
+		<div class="container">
+			<div class="card" style="--i:-3;" onclick="navigateTo('壁画介绍网页.html')">
+				
+				<div class="card_front">
+					<img src="../img/飞天佛像图.jpg"/>
+				</div>
+				
+			</div>
+			<div class="card" style="--i:-2;" onclick="navigateTo('壁画介绍网页.html')">
+				
+				<div class="card_front">
+					<img src="../img/经变画.jpg"/>
+				</div>
+				
+			</div>
+			<div class="card" style="--i:-1;" onclick="navigateTo('壁画介绍网页.html')">
+				
+				<div class="card_front">
+					<img src="../img/人像画.jpg"/>
+				</div>
+				
+			</div>
+			<div class="card" style="--i:0;" onclick="navigateTo('壁画介绍网页.html')">
+				<div class="card_front">
+					<img src="../img/装饰画.jpg"/>
+				</div>
+				
+				
+			</div>
+			<div class="card" style="--i:1;" onclick="navigateTo('壁画介绍网页.html')">
+				
+				<div class="card_front">
+					<img src="../img/故事画.jpg"/>
+				</div>
+				
+			</div>
+			<div class="card" style="--i:2;" onclick="navigateTo('壁画介绍网页.html')">
+				
+				<div class="card_front">
+					<img src="../img/故事画2.jpg"/>
+				</div>
+				
+			</div>
+			<div class="card" style="--i:3;" onclick="navigateTo('壁画介绍网页.html')">
+				
+				<div class="card_front">
+					<img src="../img/山水画.jpg"/>
+				</div>
+				
+			</div>
+			
+			
+		</div>
+		<script>
+		        // 点击卡片跳转函数
+		        function navigateTo(page) {
+		            window.location.href = page;
+		        }
+		        
+		        // 为所有卡片添加点击事件监听（备用方案）
+		        document.querySelectorAll('.card').forEach(card => {
+		            card.addEventListener('click', function() {
+		                // 获取自定义数据属性（如果有设置）
+		                const targetPage = this.getAttribute('data-target');
+		                if(targetPage) {
+		                    navigateTo(targetPage);
+		                }
+		            });
+		        });
+		    </script>
+	</body>
+	
+</html>

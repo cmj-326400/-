@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>敦煌壁画艺术展</title>
+    <style>
+        body {
+            font-family: 'SimSun', '宋体', serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f4e6;
+            color: #333;
+            overflow-x: hidden;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #8c4a2f;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+        
+        .mural-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 60px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s, transform 0.8s;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .mural-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .mural-image-container {
+            width: 300px; /* 固定宽度 */
+            flex-shrink: 0; /* 防止缩小 */
+        }
+        
+        .mural-image {
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.7s;
+            object-fit: cover; /* 保持图片比例 */
+        }
+        
+        .mural-image:hover {
+            transform: scale(1.1);
+        }
+        
+        .mural-description {
+            flex: 1;
+            padding: 0 30px;
+            text-align: justify;
+            line-height: 1.8;
+        }
+        
+        .odd .mural-image-container {
+            order: 1;
+        }
+        
+        .odd .mural-description {
+            order: 2;
+        }
+        
+        .even .mural-image-container {
+            order: 2;
+        }
+        
+        .even .mural-description {
+            order: 1;
+        }
+        
+        /* 浮云效果 */
+        .cloud {
+            position: fixed;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            filter: blur(5px);
+            opacity: 0;
+            transition: opacity 1s;
+        }
+        
+        /* 背景浮云 */
+        .bg-cloud {
+            position: fixed;
+            background-color: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            filter: blur(8px);
+            z-index: 1;
+            animation: float-cloud 60s infinite linear;
+        }
+        
+        @keyframes float-cloud {
+            0% {
+                transform: translateX(-10%) translateY(0);
+            }
+            50% {
+                transform: translateX(100vw) translateY(-100px);
+            }
+            100% {
+                transform: translateX(-10%) translateY(-200px);
+            }
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            color: #8c4a2f;
+            font-size: 0.9em;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 900px) {
+            .mural-container {
+                flex-direction: column;
+            }
+            
+            .mural-image-container {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .mural-description {
+                padding: 0;
+                width: 100%;
+            }
+            
+            .odd .mural-image-container,
+            .even .mural-image-container {
+                order: 1;
+            }
+            
+            .odd .mural-description,
+            .even .mural-description {
+                order: 2;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>敦煌壁画艺术展</h1>
+    
+    <!-- 背景浮云 -->
+    <div id="background-clouds"></div>
+    
+    <!-- 交互浮云容器 -->
+    <div id="clouds-container"></div>
+    
+    <!-- 第1组 - 奇数，图片在左 -->
+    <div class="mural-container odd">
+        <div class="mural-image-container">
+            <img src="../img/飞天佛像图.jpg" alt="飞天壁画" class="mural-image">
+        </div>
+        <div class="mural-description">
+            <h2>飞天壁画</h2>
+            <p>敦煌飞天是敦煌艺术的标志，这些飘逸的仙女形象手持乐器或鲜花，在佛国天空中自由翱翔。飞天壁画展现了唐代绘画的高超技艺，线条流畅，色彩绚丽，体现了佛教艺术与中国传统绘画的完美结合。</p>
+        </div>
+    </div>
+    
+    <!-- 第2组 - 偶数，图片在右 -->
+    <div class="mural-container even">
+        <div class="mural-description">
+            <h2>药师经变图</h2>
+            <p>药师经变图描绘了药师佛的净土世界，画面中央为药师佛，两侧有日光菩萨和月光菩萨。整幅壁画构图严谨，色彩以青绿为主，展现了盛唐时期敦煌壁画的典型风格，是研究唐代佛教艺术的重要资料。</p>
+        </div>
+        <div class="mural-image-container">
+            <img src="../img/经变画.jpg" alt="药师经变图" class="mural-image">
+        </div>
+    </div>
+    
+    <!-- 第3组 - 奇数，图片在左 -->
+    <div class="mural-container odd">
+        <div class="mural-image-container">
+            <img src="../img/反弹琵琶图.jpg" alt="反弹琵琶" class="mural-image">
+        </div>
+        <div class="mural-description">
+            <h2>反弹琵琶</h2>
+            <p>反弹琵琶是敦煌壁画中最著名的乐舞形象之一，描绘了一位舞伎高抬右腿，将琵琶置于背后弹奏的瞬间。这一形象生动传神，展现了唐代乐舞艺术的繁荣景象，也成为敦煌艺术的代表性符号。</p>
+        </div>
+    </div>
+    
+    <!-- 第4组 - 偶数，图片在右 -->
+    <div class="mural-container even">
+        <div class="mural-description">
+            <h2>莲花缠枝纹藻井图</h2>
+            <p>敦煌莫高窟中的"莲花缠枝纹藻井"是隋唐时期佛教装饰艺术的典范，体现了中西文化交融的审美特色。藻井以莲花为核心，花瓣层叠舒展，象征净土世界的圣洁；四周环绕蜿蜒的缠枝纹，葡萄、石榴等异域果叶与忍冬纹交织，形成连绵不断的律动线条。其构图采用中心对称式，青绿主调间施金、赭，色彩明丽而不失庄重。  
+
+敦煌画工将宗教象征与装饰趣味完美结合，反映了隋唐盛世开放包容的文化气度。</p>
+        </div>
+        <div class="mural-image-container">
+            <img src="../img/装饰画.jpg" alt="莲花缠枝纹藻井" class="mural-image">
+        </div>
+    </div>
+    
+    <!-- 第5组 - 奇数，图片在左 -->
+    <div class="mural-container odd">
+        <div class="mural-image-container">
+            <img src="../img/故事画.jpg" alt="鹿王本生图" class="mural-image">
+        </div>
+        <div class="mural-description">
+            <h2>鹿王本生图</h2>
+            <p>《鹿王本生》故事讲述古代印度的恒河岸边树林中，生活着一只美丽的九色鹿。一天，有人失足落水，大声呼救。九色鹿奋不顾身地跳入急流，救起溺人，溺人感激，长跪谢恩。九色鹿说："不用感谢，只希望不要把我所在的地方告诉别人，人们贪图我的皮毛，会加害于我。"溺人允诺发誓而去。"本生故事"其实就是释迦摩尼成佛前世的故事,
+取材于古印度的语言和传说。</p>
+        </div>
+    </div>
+    
+    <!-- 第6组 - 偶数，图片在右 -->
+    <div class="mural-container even">
+        <div class="mural-description">
+            <h2>尸毗王本生</h2>
+            <p>这个本生故事画最早见于北凉第275窟北壁中层，只画了割肉和过秤两个情节，属莫高窟最早的连环故事画之一。这幅画是"尸毗王本生"。此画增加了鹰追鸽、鸽向尸毗王求救、眷属痛哭等情节，增加了内容和时空跨度。正中的尸毗王形体高大，把画面一分为二，被割肉的小腿抬起，尸毗王目视血淋淋的伤口，使割肉主题一目了然。
+这幅画的构图表现出高超的结构才能。</p>
+        </div>
+        <div class="mural-image-container">
+            <img src="../img/故事画2.jpg" alt="尸毗王本生" class="mural-image">
+        </div>
+    </div>
+    
+    <!-- 第7组 - 奇数，图片在左 -->
+    <div class="mural-container odd">
+        <div class="mural-image-container">
+            <img src="../img/山水画.jpg" alt="山水图" class="mural-image">
+        </div>
+        <div class="mural-description">
+            <h2>青山绿水图</h2>
+            <p>这幅山水画的结构完整，故事情节由远及近，从右上角蜿蜒流淌的河流到右侧的山后，河两旁的树林逐渐变小，展现了深远的空间感。画面中的山水、人物、建筑、植物等元素描绘细腻，层次丰富，形象生动。无论是左侧的危崖、右侧的西域城堡、平缓的丘陵还是城外环绕的河水、岸柳、杂花生树，都描绘得栩栩如生，让人仿佛置身其中。
+	
+壁画色调以青绿色为主，给人一种清秀、爽朗的感觉。</p>
+        </div>
+    </div>
+    
+    <footer>
+        <p><a href="../目录.html">敦煌壁画艺术 - 丝绸之路上的文化瑰宝</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 滚动动画效果
+            const muralContainers = document.querySelectorAll('.mural-container');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            muralContainers.forEach(container => {
+                observer.observe(container);
+            });
+            
+            // 创建背景浮云
+            const backgroundClouds = document.getElementById('background-clouds');
+            for (let i = 0; i < 5; i++) {
+                createBackgroundCloud();
+            }
+            
+            function createBackgroundCloud() {
+                const cloud = document.createElement('div');
+                cloud.className = 'bg-cloud';
+                
+                // 随机大小
+                const size = Math.random() * 200 + 100;
+                cloud.style.width = `${size}px`;
+                cloud.style.height = `${size * 0.6}px`;
+                
+                // 随机位置
+                cloud.style.left = `${Math.random() * 20}%`;
+                cloud.style.top = `${Math.random() * 100}%`;
+                
+                // 随机动画延迟和持续时间
+                const delay = Math.random() * 30;
+                const duration = Math.random() * 30 + 60;
+                cloud.style.animation = `float-cloud ${duration}s ${delay}s infinite linear`;
+                
+                backgroundClouds.appendChild(cloud);
+            }
+            
+            // 创建交互浮云
+            const cloudsContainer = document.getElementById('clouds-container');
+            
+            function createCloud(e) {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                
+                // 随机大小
+                const size = Math.random() * 60 + 40;
+                cloud.style.width = `${size}px`;
+                cloud.style.height = `${size * 0.6}px`;
+                
+                // 设置位置
+                cloud.style.left = `${e.clientX - size/2}px`;
+                cloud.style.top = `${e.clientY - size/2}px`;
+                
+                cloudsContainer.appendChild(cloud);
+                
+                // 显示云朵
+                setTimeout(() => {
+                    cloud.style.opacity = '0.7';
+                }, 10);
+                
+                // 3秒后淡出并移除
+                setTimeout(() => {
+                    cloud.style.opacity = '0';
+                    setTimeout(() => {
+                        cloud.remove();
+                    }, 1000);
+                }, 3000);
+            }
+            
+            // 鼠标移动时创建浮云（频率降低）
+            let lastCloudTime = 0;
+            document.addEventListener('mousemove', (e) => {
+                const now = Date.now();
+                if (now - lastCloudTime > 300) { // 每300ms最多创建一个
+                    createCloud(e);
+                    lastCloudTime = now;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

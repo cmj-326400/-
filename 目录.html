@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>敦煌莫高窟目录</title>
+    <style>
+        body {
+            font-family: 'SimSun', '宋体', serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('img/目录.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        
+        .temple-left {
+            position: fixed;
+            left: 5%;
+            bottom: -50%; /* 初始位置在屏幕下方 */
+            width: 35vw; /* 增大宽度 */
+            max-width: 450px; /* 增大最大宽度 */
+            height: 70vh; /* 增加高度控制 */
+            background-image: url('img/飞天.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center bottom;
+            opacity: 0;
+            z-index: -1;
+            transition: all 2s cubic-bezier(0.25, 0.1, 0.25, 1); /* 平滑的缓动效果 */
+            transform-origin: center bottom; /* 设置变换原点 */
+        }
+        
+        
+        .temple-show {
+            opacity: 0.9;
+        }
+        
+        /* 飞天图片的动画效果 */
+        .fly-in {
+            opacity: 0.9;
+            bottom: 30%; /* 飞到页面中间位置 */
+            transform: scale(2.0) rotate(-5deg); /* 轻微放大和旋转 */
+        }
+        
+        /* 其他原有样式保持不变 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+        }
+        
+        .directory-container {
+            text-align: center;
+            width: 80%;
+            max-width: 600px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+			position: relative; 
+			
+        }
+		
+		/* 使用伪元素添加花纹 */
+		        .directory-container::before,
+		        .directory-container::after {
+		            content: "";
+		            position: absolute;
+		            width: 80px;  /* 花纹宽度 */
+		            height: 300px; /* 花纹高度 */
+		            top: 50%;
+		            transform: translateY(-50%);
+		            background-size: contain;
+		            background-repeat: no-repeat;
+		            background-position: center;
+		            z-index: 0;
+					opacity: 0.6;
+		        }
+		
+		/* 左侧花纹 */
+		        .directory-container::before {
+		            left: 0px; /* 向左移动一半宽度，使花纹部分在容器外 */
+		            background-image: url('img/花纹右.png');
+		        }
+		
+		/* 右侧花纹 */
+		        .directory-container::after {
+		            right: 0px; /* 向右移动一半宽度，使花纹部分在容器外 */
+		            background-image: url('img/花纹左.png');
+		        }
+
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #8b4513;
+            letter-spacing: 0.5rem;
+            line-height: 1.5;
+        }
+        
+        .dunhuang {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            color: #8b4513;
+            letter-spacing: 1rem;
+        }
+        
+        .mogoku {
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #8b4513;
+            letter-spacing: 0.5rem;
+        }
+        
+        .directory {
+            list-style: none;
+            padding: 0;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .directory li {
+            padding: 1rem 0;
+            width: 100%;
+            text-align: center;
+            border-bottom: 1px solid #d4a76a;
+            font-size: 1.2rem;
+            color: #5a3921;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+        
+        .directory li.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .directory li a {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .directory li a:hover {
+            transform: scale(1.1);
+            color: #b87333;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- 左侧飞天图片 -->
+    <div class="temple-left" id="templeLeft"></div>
+    
+    <div class="directory-container">
+		
+        <div class="dunhuang">DUN<br>HUANG</div>
+        <div class="mogoku">MOGAOKU</div>
+        
+        <h2>敦煌简介</h2>
+        <ul class="directory">
+            <li><a href="js/敦煌历史.html">历史沿革</a></li>
+            <li><a href="js/敦煌壁画.html">壁画</a></li>
+            <li><a href="时钟轮播.html">纹样</a></li>
+            <li><a href="游戏.html">建筑</a></li>
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 显示两侧图片
+            setTimeout(() => {
+                const leftTemple = document.getElementById('templeLeft');
+                   
+             // 左侧飞天图片添加飞入动画
+                leftTemple.classList.add('temple-show');
+                setTimeout(() => {
+                    leftTemple.classList.add('fly-in');
+                }, 100); // 稍微延迟一下，让浏览器有时间处理初始状态
+                
+            }, 500);
+	
+            
+            // 逐个显示目录项
+            const items = document.querySelectorAll('.directory li');
+            items.forEach((item, index) => {
+                setTimeout(() => {
+                    item.classList.add('show');
+                }, 800 + 300 * index); // 延迟到图片动画之后
+            });
+        });
+    </script>
+</body>
+</html>

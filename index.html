@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <!-- 设置网页的字符编码为UTF-8 -->
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <!-- 允许网页在iOS设备上以全屏模式运行 -->
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
+        />
+        <!-- 设置网页在移动设备上的显示方式 -->
+
+        <meta name="twitter:card" content="summary_large_image" />
+        <!-- 设置Twitter卡片类型 -->
+
+        <title>
+            tsParticles | Firefly Preset | JavaScript Particles, Confetti and Fireworks animations for your website
+        </title>
+        <!-- 链接到CSS文件，用于定义网页的样式 -->
+
+        <!-- 加载Google Analytics脚本 -->
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+
+            gtag("config", "G-922Z47NPS0");
+        </script>
+		
+		<!-- 莲花云图片设置-->
+		<style>
+		         #imageContainer {
+		                    position: fixed; /* 固定定位 */
+		                    top: 50%;
+		                    left: 50%;
+		                    transform: translate(-50%, -50%); /* 居中显示 */
+		                    display: none; /* 初始时隐藏图片 */
+		                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 图片阴影 */
+		                    opacity: 0; /* 初始透明度 */
+		                    transition: opacity 1s ease; /* 淡入时长 */
+		                }
+		        
+		                #imageContainer img {
+		                    width: 220px; /* 图片宽度 */
+		                    height: auto; /* 图片高度自动调整 */
+		                }
+		    </style>
+    </head>
+
+    <body>
+        <div id="tsparticles"></div>
+        <!-- 定义一个div元素作为粒子动画的容器 -->
+        <script type="text/javascript">
+			(async (engine) => {
+			        await loadFireflyPreset(engine);
+			        await engine.load({
+			            id: "tsparticles",
+			            options: {
+			                preset: "firefly",
+			                particles: {
+			                    number: {
+			                        value: 100, // 调整粒子数量
+			                        density: {
+			                            enable: true,
+			                            value_area: 800, // 调整粒子密度
+			                        },
+			                    },
+								size: {
+									
+								    value: 4.5, // 粒子大小
+								    random: {
+								    enable: true,
+								    minimumValue: 0.2, // 最小粒子大小
+								},
+								color: {
+								    value: ["#ffd700", "#c0c0c0", "#ffff00"], // 粒子颜色
+								    animation: {
+								        enable: true, // 启用颜色动画
+								        speed: 20, // 颜色变化速度
+								        sync: true, // 同步变化
+								    },
+								},
+			                },
+			            },
+			        });
+			    })(tsParticles);
+            (function (c, l, a, r, i, t, y) {
+                c[a] =
+                    c[a] ||
+                    function () {
+                        (c[a].q = c[a].q || []).push(arguments);
+                    };
+                t = l.createElement(r);
+                t.async = 1;
+                t.src = "https://www.clarity.ms/tag/" + i;
+                y = l.getElementsByTagName(r)[0];
+                y.parentNode.insertBefore(t, y);
+            })(window, document, "clarity", "script", "8q4bxin4tm");
+        </script>
+        <!-- 加载Microsoft Clarity脚本 -->
+        <script
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1784552607103901"
+            crossorigin="anonymous"
+        ></script>
+        <!-- 加载Google AdSense脚本 -->
+        <script src="https://cdn.jsdelivr.net/npm/@tsparticles/preset-firefly@3.2.0/tsparticles.preset.firefly.bundle.min.js"></script>
+        <!-- 加载tsParticles库及其firefly预设 -->
+        <script type="text/javascript">
+            (async (engine) => {
+                await loadFireflyPreset(engine);
+                <!-- 加载firefly预设 -->
+                await engine.load({ id: "tsparticles", options: { preset: "firefly" } });
+                <!-- 初始化粒子动画 -->
+            })(tsParticles);
+        </script>
+		
+		
+		
+		   <div id="imageContainer">
+		        <img src="static/1.png" alt="Clickable Image" id="xiangyunImg">
+		    </div>
+		
+		    <script>
+
+                    const img = document.getElementById('xiangyunImg');
+                    const box = document.getElementById('imageContainer');
+
+                    // 首次 1 秒淡入（可选，不需要就删掉）
+                    window.addEventListener('load', () => {
+                    box.style.display = 'block';
+                    setTimeout(() => box.style.opacity = 1, 10);
+                });
+
+                    // 点击图片 → 跳转
+                    img.addEventListener('click', () => {
+                    // 如果还想先淡出再跳转，就写：
+                    box.style.opacity = 0;
+                    setTimeout(() => {
+                    box.style.display = 'none';
+                    location.href = '目录.html';   // ← 目标地址
+                }, 800);   // 与 CSS transition 时长一致
+                });
+
+        </script>
+    </body>
+</html>

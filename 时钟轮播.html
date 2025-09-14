@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>历史时期圆形导航菜单</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            transition: background 0.8s ease;
+            background: linear-gradient(135deg, #2c3e50, #4a69bd);
+        }
+
+        .main {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-buttons {
+            position: absolute;
+            left: 27%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            z-index: 999;
+            padding: 40px 0;
+        }
+
+        .nav-btn {
+            width: 80px;
+            height: 80px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+        }
+
+        .nav-btn:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-btn svg {
+            width: 60%;
+            height: 60%;
+            fill: white;
+        }
+
+        #content {
+            width: 30%;
+            height: 100%;
+            position: absolute;
+            left: 15%;
+            overflow: hidden;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: white;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transform: translateY(100%);
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+
+        .card.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card-time {
+            font-size: 40px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .card-title {
+            font-size: 50px;
+            font-weight: 500;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+            margin-bottom: 20px;
+        }
+
+        .card-passage {
+            font-size: 24px;
+            font-weight: 300;
+            line-height: 1.6;
+        }
+
+        #clock {
+            height: 130%;
+            aspect-ratio: 1 / 1;
+            position: absolute;
+            right: -28%;
+            top: -15%;
+            border-radius: 50%;
+            background-color: white;
+            border: #ff9214 30px solid;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 1000px) {
+            #clock {
+                right: -90%;
+            }
+        }
+
+        #clock-table {
+            width: 96%;
+            height: 96%;
+            border-radius: 50%;
+            position: absolute;
+            top: 2%;
+            left: 2%;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .invisible-table {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transform-origin: 50% 50%;
+            position: absolute;
+        }
+
+        .clock-thick {
+            width: 6%;
+            height: 6px;
+            background-color: #5053fc;
+            position: absolute;
+            top: calc(50% - 3px);
+            left: 0px;
+        }
+
+        .clock-thick span {
+            font-size: 30px;
+            position: absolute;
+            left: 140%;
+            top: calc(50% - 15px);
+            color: #5053fc;
+            font-weight: bold;
+        }
+
+        .clock-scale {
+            width: 4%;
+            height: 2px;
+            background-color: #5053fc;
+            position: absolute;
+            top: calc(50% - 1px);
+            left: 0px;
+        }
+
+        /* 时钟指针样式 */
+        #clock-center {
+            width: 30px;
+            height: 30px;
+            background: #ff9214;
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        #clock-pointer {
+            width: 6px;
+            height: 45%;
+            background: #ff9214;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%) rotate(0deg);
+            transform-origin: top center;
+            z-index: 9;
+            border-radius: 6px 6px 0 0;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* 导航菜单项 */
+        .nav-item {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #5053fc;
+            cursor: pointer;
+            transform-origin: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+        }
+
+        .nav-item:hover {
+            transform: scale(1.1);
+            background: #ff9214;
+            color: white;
+        }
+
+        /* 活动指示器 */
+        .active-indicator {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ff9214;
+            border-radius: 50%;
+            top: -10px;
+            right: -10px;
+            z-index: 101;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 背景覆盖层 */
+        .background-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            transition: opacity 0.8s ease;
+            opacity: 0;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .northern-dynasty-bg {
+            opacity: 0;
+            background-image: url('https://i.ecywang.com/upload/1/img2.baidu.com/it/u=1061536526,2274820700&fm=253&fmt=auto&app=138&f=JPEG?w=504&h=500');
+            background-size: cover;
+            background-position: center;
+            transition: opacity 0.8s ease;
+        }
+
+        .sui-tang-dynasty-bg {
+            opacity: 0;
+            background-image: url('https://x0.ifengimg.com/res/2020/341E3A632E431C37F9A56C7901EE12B1B30E4708_size428_w1000_h1001.jpeg');
+            background-size: cover;
+            background-position: center;
+            transition: opacity 0.8s ease;
+        }
+
+        .five-dynasties-bg {
+            opacity: 0;
+            background-image: url('https://x0.ifengimg.com/ucms/2024_06/D21E53985B942A33EC74F3A47D114C3ACE436E29_size288_w1080_h733.jpg');
+            background-size: cover;
+            background-position: center;
+            transition: opacity 0.8s ease;
+        }
+
+        .yuan-dynasty-bg {
+            opacity: 0;
+            background-image: url('https://n.sinaimg.cn/sinakd20108/207/w1527h1080/20230330/4ee6-47c6e0af34b46adfba80c37988ee9110.jpg');
+            background-size: cover;
+            background-position: center;
+            transition: opacity 0.8s ease;
+        }
+
+        .home-button {
+            top: 10px;
+            left: 10px;
+            font-size: 1.5em;
+            width: 40px;
+            height: 40px;
+    </style>
+</head>
+
+<body>
+<a href="目录.html" class="home-button">🏠</a>
+<div class="main">
+    <!-- 背景覆盖层 - 每个时期一个 -->
+    <div class="background-overlay northern-dynasty-bg"></div>
+    <div class="background-overlay sui-tang-dynasty-bg"></div>
+    <div class="background-overlay five-dynasties-bg"></div>
+    <div class="background-overlay yuan-dynasty-bg"></div>
+
+    <div class="nav-buttons">
+        <div class="nav-btn" id="up-btn">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z"></path>
+            </svg>
+        </div>
+        <div class="nav-btn" id="down-btn">
+            <svg viewBox="0 0 24 24">
+                <path d="M16 9.4l-3.88 3.88-3.88-3.88L3.96 10l6 6 6-6z"></path>
+            </svg>
+        </div>
+    </div>
+
+    <div id="content">
+        <div class="card active">
+            <div class="card-time">北朝时期（386-581年）</div>
+            <div class="card-title">忍冬纹</div>
+            <div class="card-passage">
+                <br>
+                忍冬纹是北朝敦煌壁画中最具代表性的植物纹样，源于西亚，随佛教艺术传入中国。
+                <br><br>
+                其叶片多为三裂或四裂，呈波状连续排列，色彩以青绿、赭黑、白色为主，富有韵律感。
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-time">隋唐时期（581-907年）</div>
+            <div class="card-title">忍冬纹</div>
+            <div class="card-passage">
+                <br>
+                隋唐时期是中国封建社会的鼎盛时期。隋朝统一了中国，开创了科举制度，修建了大运河。唐朝在此基础上进一步发展，政治清明，经济繁荣，文化昌盛, 疆域辽阔。
+                <br><br>
+                唐朝时期，长安成为世界上最大的国际都市，丝绸之路贸易繁荣。唐诗达到中国古典诗歌的顶峰，出现了李白、杜甫等伟大诗人。唐朝的文化影响力远播日本、朝鲜等周边国家。
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-time">五代（907-960年）</div>
+            <div class="card-title">团龙纹藻井</div>
+            <div class="card-passage">
+                <br>
+                藻井中心绘制一条全身卷曲的龙，四腿伸展，龙头平视，口含火焰珠宝，神态威严。
+                <br><br>
+                龙在中华文化中是神异动物，象征祥瑞与权力。五代时期，敦煌归义军政权通过绘制团龙纹，彰显对中原皇权的认同与地方统治的合法性。
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-time">元代（1271-1368年）</div>
+            <div class="card-title">方菱圆环套联纹</div>
+            <div class="card-passage">
+                <br>
+                由斜方格和圆弧支条迭压套联而成，形成连续的几何纹样。组构奇特，给人以皮革穿编的感觉
+                <br><br>
+                画工依据多边几何形连续纹组构方法自创组制，体现元代建筑彩画几何形纹样的丰富性。
+            </div>
+        </div>
+    </div>
+
+    <div id="clock">
+        <div id="clock-center"></div>
+        <div id="clock-pointer"></div>
+        <div id="clock-table"></div>
+    </div>
+</div>
+
+<script>
+    // 定义变量
+    let currentIndex = 0;
+    const totalSlides = document.querySelectorAll('.card').length;
+    const clock = document.querySelector('#clock-table');
+    const pointer = document.querySelector('#clock-pointer');
+    const navItems = [];
+    const backgroundOverlays = document.querySelectorAll('.background-overlay');
+
+    // 历史时期数据
+    const historicalPeriods = [
+        { name: "北朝", years: "386-581", angle: -45 },
+        { name: "隋唐", years: "581-907", angle: 45 },
+        { name: "五代", years: "907-960", angle: 135 },
+        { name: "元代", years: "1271-1368", angle: 225 }
+    ];
+
+    // 初始化
+    function init() {
+        // 设置初始背景
+        document.body.style.background = "linear-gradient(135deg, #2c3e50, #4a69bd)";
+
+        // 创建时钟刻度
+        createClockScales();
+
+        // 创建导航菜单项
+        createNavItems();
+
+        // 设置初始状态
+        updateSlide();
+
+        // 添加按钮事件监听
+        document.getElementById('up-btn').addEventListener('click', slideToPrev);
+        document.getElementById('down-btn').addEventListener('click', slideToNext);
+    }
+
+    // 创建时钟刻度
+    function createClockScales() {
+        // 只创建4个主要刻度
+        historicalPeriods.forEach(period => {
+            addThickClockScale(period.angle, period.name, period.years);
+        });
+    }
+
+    // 添加粗刻度
+    function addThickClockScale(degree, name, years) {
+        const invisibleClockTable = document.createElement("div");
+        invisibleClockTable.className = "invisible-table";
+        invisibleClockTable.style.transform = `rotate(${degree}deg)`;
+
+        const thickClockScale = document.createElement("div");
+        thickClockScale.className = "clock-thick";
+
+        const scaleContent = document.createElement("span");
+        scaleContent.innerHTML = `${name}<br><small>${years}</small>`;
+
+        thickClockScale.appendChild(scaleContent);
+        invisibleClockTable.appendChild(thickClockScale);
+        clock.appendChild(invisibleClockTable);
+    }
+
+    // 创建导航菜单项
+    function createNavItems() {
+        const clockElem = document.getElementById('clock');
+        const radius = clockElem.offsetWidth / 2 - 60;
+
+        historicalPeriods.forEach((period, i) => {
+            const radian = period.angle * Math.PI / 180;
+
+            const x = Math.cos(radian) * radius;
+            const y = Math.sin(radian) * radius;
+
+            const navItem = document.createElement('div');
+            navItem.className = 'nav-item';
+            navItem.innerHTML = period.name;
+            navItem.style.left = `calc(50% + ${x}px)`;
+            navItem.style.top = `calc(50% + ${y}px)`;
+
+            // 添加活动指示器
+            const indicator = document.createElement('div');
+            indicator.className = 'active-indicator';
+            indicator.style.display = i === 0 ? 'block' : 'none';
+            navItem.appendChild(indicator);
+
+            // 添加点击事件
+            navItem.addEventListener('click', () => {
+                currentIndex = i;
+                updateSlide();
+            });
+
+            clockElem.appendChild(navItem);
+            navItems.push(navItem);
+        });
+    }
+
+    // 向前切换卡片
+    function slideToPrev() {
+        currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+        updateSlide();
+    }
+
+    // 向后切换卡片
+    function slideToNext() {
+        currentIndex = (currentIndex + 1) % totalSlides;
+        updateSlide();
+    }
+
+    // 更新幻灯片显示
+    function updateSlide() {
+        // 更新卡片显示
+        const slides = document.querySelectorAll('.card');
+        slides.forEach((slide, index) => {
+            if (index === currentIndex) {
+                slide.classList.add('active');
+            } else {
+                slide.classList.remove('active');
+            }
+        });
+
+        // 更新时钟旋转
+        const rotationDegree = currentIndex * -90;
+        clock.style.transform = `rotate(${rotationDegree}deg)`;
+        pointer.style.transform = `translateX(-50%) rotate(${rotationDegree}deg)`;
+
+        // 更新导航菜单项活动状态
+        navItems.forEach((item, index) => {
+            const indicator = item.querySelector('.active-indicator');
+            if (indicator) {
+                indicator.style.display = index === currentIndex ? 'block' : 'none';
+            }
+
+            // 添加一些动画效果
+            if (index === currentIndex) {
+                item.style.transform = 'scale(1.2)';
+                item.style.background = '#ff9214';
+                item.style.color = 'white';
+            } else {
+                item.style.transform = 'scale(1)';
+                item.style.background = 'white';
+                item.style.color = '#5053fc';
+            }
+        });
+
+        // 更新背景 - 根据当前时期显示对应的背景
+        backgroundOverlays.forEach((overlay, index) => {
+            if (index === currentIndex) {
+                overlay.style.opacity = "0.5";
+            } else {
+                overlay.style.opacity = "0";
+            }
+        });
+
+        // 设置深色背景以突显背景图片
+        document.body.style.background = "#2c3e50";
+    }
+
+    // 初始化
+    window.addEventListener('load', init);
+
+    // 添加键盘支持
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowUp') {
+            slideToPrev();
+        } else if (e.key === 'ArrowDown') {
+            slideToNext();
+        }
+    });
+</script>
+</body>
+
+</html>

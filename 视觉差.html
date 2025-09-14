@@ -1,0 +1,553 @@
+<!DOCTYPE html>                                                                 <!-- HTML5 声明 -->
+<html lang="zh-CN">                                                               <!-- 根元素，语言中文 -->
+<head>
+  <meta charset="UTF-8">                                                          <!-- 字符编码：UTF-8 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">        <!-- 移动端视口适配 -->
+  <title>敦煌艺术 - 视觉差滚动体验</title>                                        <!-- 浏览器标签标题 -->
+  <!-- 谷歌字体：马善政手写体 + 思源宋体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {                                                                           /* 通用选择器重置样式 */
+      margin: 0;                                                                  /* 去掉默认外边距 */
+      padding: 0;                                                                 /* 去掉默认内边距 */
+      box-sizing: border-box;                                                     /* 统一盒模型计算方式 */
+    }
+
+    body {                                                                        /* 页面整体 */
+      font-family: 'Noto Serif SC', serif;                                       /* 正文字体：思源宋体 */
+      color: #f8e3c8;                                                             /* 文字颜色：淡金色 */
+      background: #2c1a0a;                                                        /* 背景色：深褐色 */
+      overflow-x: hidden;                                                         /* 禁止横向滚动 */
+      height: 100%;                                                               /* 高度占满窗口 */
+    }
+
+    .parallax-container {                                                         /* 视差滚动根容器 */
+      height: 100vh;                                                              /* 占满整屏高度 */
+      overflow-x: hidden;                                                         /* 横向无滚动 */
+      overflow-y: auto;                                                           /* 纵向可滚动 */
+      perspective: 1px;                                                           /* 开启3D透视，为视差做准备 */
+    }
+
+    .parallax-layer {                                                             /* 视差层通用类 */
+      position: absolute;                                                         /* 绝对定位满父级 */
+      top: 0;                                                                     /* 贴顶部 */
+      left: 0;                                                                    /* 贴左侧 */
+      right: 0;                                                                   /* 贴右侧 */
+      bottom: 0;                                                                  /* 贴底部 */
+    }
+
+    .layer-back {                                                                 /* 远景层 */
+      transform: translateZ(-3px) scale(4);                                       /* 推远3px，再放大4倍，制造慢速视差 */
+      background: linear-gradient(to bottom, #6d2c0d 0%, #8a3b12 40%, #b36a2c 100%); /* 橙红渐变背景 */
+    }
+
+    .layer-middle {                                                               /* 中景层 */
+      transform: translateZ(-1px) scale(2);                                       /* 推远1px，放大2倍，中速视差 */
+      background-image:                                                            /* 两层淡金光斑作为纹理 */
+              radial-gradient(circle at 20% 30%, rgba(217, 165, 102, 0.2) 10%, transparent 20%),
+              radial-gradient(circle at 80% 60%, rgba(217, 165, 102, 0.2) 5%, transparent 15%);
+    }
+
+    .layer-front {                                                                /* 前景层（文字、骆驼等） */
+      transform: translateZ(0);                                                   /* 不位移，正常滚动速度 */
+      display: flex;                                                              /* 弹性布局 */
+      flex-direction: column;                                                     /* 垂直方向 */
+      justify-content: center;                                                    /* 垂直居中 */
+      align-items: center;                                                        /* 水平居中 */
+      text-align: center;                                                         /* 文字居中 */
+      padding: 2rem;                                                              /* 内边距 */
+    }
+
+    .cave-background {                                                            /* 洞窟背景 */
+      position: absolute;                                                         /* 绝对定位满父级 */
+      width: 100%;                                                                /* 宽100% */
+      height: 100%;                                                               /* 高100% */
+      background-image:                                                            /* 两层背景：暗角遮罩 + 纹理 */
+              radial-gradient(circle at center, transparent 30%, #2c1a0a 80%),
+              url('static/bg2.jpg');                                                      /* 使用 bg.jpg 作为背景图片 */
+      background-size: cover, cover;                                              /* 遮罩拉伸，背景图片覆盖 */
+      background-position: center center;                                         /* 背景居中对齐 */
+    }
+
+    .sand-dunes {                                                                 /* 沙丘 */
+      position: absolute;                                                         /* 绝对定位 */
+      bottom: 0;                                                                  /* 贴底部 */
+      width: 100%;                                                                /* 宽100% */
+      height: 200px;
+      /*
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200"><path fill="%23d9a566" d="M0,150 Q50,100 100,150 T200,130 T300,170 T400,130 L400,200 L0,200 Z"/></svg>') bottom repeat-x;      */                     /* 用背景图横向平铺，可换成沙丘SVG */
+
+      background-size: 800px 200px;                                               /* 每800px重复一次 */
+    }
+
+    .title-content {                                                              /* 主标题容器 */
+      z-index: 10;                                                                /* 叠层置前 */
+      opacity: 0;                                                                 /* 初始透明 */
+      transform: translateY(50px);                                                /* 初始向下50px */
+      transition: all 1.5s ease-out;                                              /* 1.5秒过渡动画 */
+    }
+
+    h1 {                                                                           /* 主标题文字 */
+      font-family: 'Ma Shan Zheng', cursive;                                     /* 手写艺术字体 */
+      font-size: 7rem;                                                          /* 字号4.5rem ≈ 72px */
+      color: #c87006;                                                             /* 金色 */
+      text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.7);                               /* 阴影增强可读性 */
+      margin-bottom: 1.5rem;                                                      /* 下间距 */
+      position: relative;                                                         /* 相对定位，便于伪元素 */
+    }
+
+    h1::after {                                                                   /* 主标题下方装饰线 */
+      content: "";                                                                /* 伪元素必须 */
+      position: absolute;                                                         /* 绝对定位 */
+      bottom: -10px;                                                              /* 标题下方10px */
+      left: 50%;                                                                  /* 水平居中 */
+      transform: translateX(-50%);                                                /* 居中偏移修正 */
+      width: 100px;                                                               /* 线宽100px */
+      height: 3px;                                                                /* 线高3px */
+      background: linear-gradient(90deg, transparent, #d9a566, transparent);      /* 金色渐变横线 */
+    }
+
+    h2 {                                                                           /* 副标题 */
+      font-size: 2rem;                                                            /* 字号2rem ≈ 32px */
+      color: #5e3606;                                                             /* 淡金色 */
+      margin-bottom: 2rem;                                                        /* 下间距 */
+      font-weight: 400;                                                           /* 字重正常 */
+      border-bottom: 2px solid #d9a566;                                           /* 底部金线 */
+      padding-bottom: 1rem;                                                       /* 线距文字1rem */
+      display: inline-block;                                                      /* 行内块，宽度随内容 */
+    }
+
+    .scroll-indicator {                                                           /* 向下滚动提示 */
+      position: absolute;                                                         /* 绝对定位 */
+      bottom: 30px;                                                               /* 距底部30px */
+      left: 50%;                                                                  /* 水平居中 */
+      transform: translateX(-50%);                                                /* 居中偏移修正 */
+      color: #6c6005;                                                             /* 金色 */
+      font-size: 1rem;                                                            /* 字号 */
+      animation: bounce 2s infinite;                                              /* 2秒循环弹跳动画 */
+      display: flex;                                                              /* 弹性布局，竖排 */
+      flex-direction: column;                                                     /* 垂直排列 */
+      align-items: center;                                                        /* 水平居中子元素 */
+    }
+
+    .scroll-indicator::before {                                                   /* 箭头竖线 */
+      content: "";                                                                /* 伪元素必须 */
+      width: 2px;                                                                 /* 线宽2px */
+      height: 30px;                                                               /* 线高30px */
+      background: #6c6005;                                                        /* 金色 */
+      margin-bottom: 10px;                                                        /* 与文字间距10px */
+    }
+
+    @keyframes bounce {                                                           /* 箭头弹跳关键帧 */
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateX(-50%) translateY(0);                                /* 原位 */
+      }
+      40% {
+        transform: translateX(-50%) translateY(-10px);                            /* 上移10px */
+      }
+      60% {
+        transform: translateX(-50%) translateY(-5px);                             /* 上移5px */
+      }
+    }
+
+    .content-sections {                                                           /* 滚动后正文区 */
+      position: relative;                                                         /* 相对定位，便于叠层 */
+      z-index: 20;                                                                /* 叠层置前，覆盖视差层 */
+      background: #2c1a0a;                                                        /* 深褐背景，与页面统一 */
+      padding: 5rem 2rem;                                                         /* 上下5rem 左右2rem内边距 */
+    }
+
+    .section {                                                                    /* 每段内容块 */
+      max-width: 1200px;                                                          /* 最大宽度1200px */
+      margin: 0 auto 6rem;                                                        /* 居中，下间距6rem */
+      opacity: 0;                                                                 /* 初始透明 */
+      transform: translateY(50px);                                                /* 初始向下50px */
+      transition: all 1s ease-out;                                                /* 1秒过渡 */
+    }
+
+    .section.visible {                                                            /* JS滚动到视口后添加此类 */
+      opacity: 1;                                                                 /* 不透明 */
+      transform: translateY(0);                                                   /* 回到原位 */
+    }
+
+    .section-title {                                                              /* 小节标题 */
+      font-family: 'Ma Shan Zheng', cursive;                                     /* 手写体 */
+      font-size: 2.5rem;                                                          /* 字号2.5rem ≈ 40px */
+      color: #d9a566;                                                             /* 金色 */
+      margin-bottom: 2rem;                                                        /* 下间距 */
+      text-align: center;                                                         /* 居中 */
+      position: relative;                                                         /* 相对定位，便于伪元素 */
+    }
+
+    .section-title::before, .section-title::after {                               /* 标题两端装饰符号 */
+      content: "※";                                                              /* 星形符号 */
+      color: #d9a566;                                                             /* 金色 */
+      opacity: 0.6;                                                               /* 半透明 */
+      margin: 0 15px;                                                             /* 左右15px */
+    }
+
+    .section-content {                                                            /* 内容网格容器 */
+      display: grid;                                                              /* 网格布局 */
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));               /* 自适应列，最小300px */
+      gap: 2rem;                                                                  /* 列间距2rem */
+      margin-bottom: 2rem;                                                        /* 下间距 */
+    }
+
+    .text-content {                                                               /* 段落文字区 */
+      font-size: 1.1rem;                                                          /* 字号1.1rem ≈ 17.6px */
+      line-height: 1.8;                                                           /* 行高1.8倍 */
+      text-align: justify;                                                        /* 两端对齐 */
+    }
+
+    .text-content p {                                                             /* 段落 */
+      margin-bottom: 1.5rem;                                                      /* 段间距1.5rem */
+    }
+
+    .feature-card {                                                               /* 卡片区块 */
+      background: rgba(217, 165, 102, 0.1);                                       /* 淡金背景10%透明度 */
+      border: 1px solid #d9a566;                                                  /* 金色边框1px */
+      border-radius: 8px;                                                         /* 圆角8px */
+      padding: 1.5rem;                                                            /* 内边距1.5rem */
+      transition: all 0.3s ease;                                                  /* 0.3秒过渡 */
+      position: relative;                                                         /* 相对定位，便于伪元素 */
+      overflow: hidden;                                                           /* 隐藏溢出 */
+    }
+
+    .feature-card::before {                                                       /* 卡片背景斜纹 */
+      content: "";                                                                /* 伪元素必须 */
+      position: absolute;                                                         /* 绝对定位 */
+      top: 0;                                                                     /* 顶部 */
+      left: 0;                                                                    /* 左侧 */
+      width: 100%;                                                                /* 宽100% */
+      height: 100%;                                                               /* 高100% */
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path fill="%23d9a566" opacity="0.1" d="M0,0 L100,100 M100,0 L0,100"/></svg>');
+      background-size: 20px 20px;                                                 /* 斜纹20×20px平铺 */
+    }
+
+    .feature-card:hover {                                                         /* 卡片悬停效果 */
+      transform: translateY(-5px);                                                /* 上浮5px */
+      box-shadow: 0 5px 15px rgba(217, 165, 102, 0.2);                            /* 淡金阴影 */
+    }
+
+    .feature-card h3 {                                                            /* 卡片标题 */
+      color: #d9a566;                                                             /* 金色 */
+      margin-bottom: 1rem;                                                        /* 下间距1rem */
+      font-size: 1.5rem;                                                          /* 字号1.5rem ≈ 24px */
+      position: relative;                                                         /* 相对定位，便于伪元素 */
+      display: inline-block;                                                      /* 行内块，宽度随内容 */
+    }
+
+    .feature-card h3::after {                                                     /* 卡片标题下划线 */
+      content: "";                                                                /* 伪元素必须 */
+      position: absolute;                                                         /* 绝对定位 */
+      bottom: -5px;                                                               /* 距文字5px */
+      left: 0;                                                                    /* 左侧对齐 */
+      width: 100%;                                                                /* 宽度100% */
+      height: 1px;                                                                /* 高度1px */
+      background: linear-gradient(90deg, #d9a566, transparent);                   /* 金色渐变线 */
+    }
+
+    /* ===== 骆驼动画 ===== */
+    .camel {
+      position: absolute;
+      bottom: 160px;                   /* 让骆驼“踩”在沙丘上 */
+      left: -200px;                    /* 初始在屏幕外 */
+      width: 200px;                    /* 与图片同宽 */
+      height: 120px;                   /* 与图片同高 */
+      background: url('static/camel2.png') no-repeat; /* 真实骆驼 PNG */
+      background-size: contain;        /* 完整显示 */
+      z-index: 16;
+      /* 行走动画：匀速 10 秒横穿屏幕 */
+      animation: camelWalk 10s linear infinite,
+      bodyBob  2.8s ease-in-out infinite;
+    }
+
+    @keyframes camelWalk {
+      0%   { left: -200px; }
+      100% { left: calc(100% + 200px); }}
+
+    @keyframes bodyBob {
+      0%,100% { transform: translateY(0); }
+      50%     { transform: translateY(-4px); }
+
+    }
+
+    /* ===== 云烟效果 ===== */
+    .smoke {                                                                      /* 云烟球 */
+      position: absolute;                                                         /* 绝对定位 */
+      width: 100px;                                                               /* 宽100px */
+      height: 100px;                                                              /* 高100px */
+      border-radius: 50%;                                                         /* 圆形 */
+      background: rgba(255, 255, 255, 0.1);                                       /* 白色10%透明 */
+      filter: blur(15px);                                                         /* 模糊15px */
+      z-index: 5;                                                                 /* 叠层次 */
+      animation: smokeAnimation 8s ease-out infinite;                             /* 8秒上升淡出循环 */
+    }
+
+    @keyframes smokeAnimation {                                                    /* 云烟动画关键帧 */
+      0% {
+        transform: translateY(0) scale(0.5);                                      /* 初始位置，缩小一半 */
+        opacity: 0;                                                               /* 透明 */
+      }
+      50% {
+        opacity: 0.6;                                                             /* 半透明 */
+      }
+      100% {
+        transform: translateY(-100px) scale(2);                                   /* 上移100px，放大2倍 */
+        opacity: 0;                                                               /* 透明消失 */
+      }
+    }
+
+    /* ===== 佛光效果 ===== */
+    .buddha-light {                                                               /* 佛光光晕 */
+      position: absolute;                                                         /* 绝对定位 */
+      width: 300px;                                                               /* 宽300px */
+      height: 300px;                                                              /* 高300px */
+      border-radius: 50%;                                                         /* 圆形 */
+      background: radial-gradient(circle, rgba(217, 165, 102, 0.2) 0%, transparent 70%); /* 金色径向渐变 */
+      filter: blur(20px);                                                         /* 模糊20px */
+      z-index: 4;                                                                 /* 叠层次 */
+      animation: pulse 6s ease-in-out infinite alternate;                         /* 6秒呼吸循环 */
+    }
+
+    @keyframes pulse {                                                            /* 佛光呼吸关键帧 */
+      0% {
+        transform: scale(1);                                                      /* 原大小 */
+        opacity: 0.3;                                                             /* 30%透明 */
+      }
+      100% {
+        transform: scale(1.2);                                                    /* 放大1.2倍 */
+        opacity: 0.6;                                                             /* 60%透明 */
+      }
+    }
+
+    /* ===== 飞天与装饰 ===== */
+    .flying-apsaras {                                                             /* 飞天装饰 */
+      position: fixed;                                                            /* 固定定位，不随滚动 */
+      width: 100px;                                                               /* 宽100px */
+      height: 150px;                                                              /* 高150px */
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 150"><path fill="%23d9a566" d="M50,10 C60,20 65,40 60,60 C70,70 75,90 65,110 C55,130 40,140 30,140 C20,140 10,130 10,110 C10,90 20,70 30,60 C25,40 30,20 40,10 C42,8 48,8 50,10 Z"/><path fill="%23f8e3c8" d="M40,40 C45,35 55,35 60,40 C65,50 65,70 60,80 C55,85 45,85 40,80 C35,70 35,50 40,40 Z"/></svg>');
+      background-repeat: no-repeat;                                               /* 不重复 */
+      opacity: 0.7;                                                               /* 透明度70% */
+      z-index: 15;                                                                /* 叠层次 */
+      pointer-events: none;                                                       /* 鼠标穿透 */
+      transition: transform 0.1s ease-out;                                        /* 0.1秒平滑跟随 */
+    }
+
+    .decoration {                                                                 /* 花纹装饰 */
+      position: absolute;                                                         /* 绝对定位 */
+      width: 80px;                                                                /* 宽80px */
+      height: 80px;                                                               /* 高80px */
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="none" stroke="%23d9a566" stroke-width="2" d="M50,10 C70,10 90,30 90,50 C90,70 70,90 50,90 C30,90 10,70 10,50 C10,30 30,10 50,10 Z"/><circle cx="50" cy="50" r="20" fill="none" stroke="%23d9a566" stroke-width="1"/></svg>');
+      opacity: 0.5;                                                               /* 透明度50% */
+      z-index: 4;                                                                 /* 叠层次 */
+    }
+
+    /* ===== 页脚 ===== */
+    footer {                                                                      /* 页脚区 */
+      text-align: center;                                                         /* 文字居中 */
+      padding: 3rem 2rem;                                                         /* 上下3rem 左右2rem内边距 */
+      border-top: 1px solid #d9a566;                                              /* 顶部金色线1px */
+      font-size: 0.9rem;                                                          /* 字号0.9rem ≈ 14.4px */
+      color: #d9a566;                                                             /* 金色文字 */
+      position: relative;                                                         /* 相对定位，便于伪元素 */
+    }
+
+    footer::before {                                                              /* 页脚上方装饰符号 */
+      content: "※ ※ ※";                                                          /* 三个星形符号 -->
+      position: absolute;                                                         /* 绝对定位 */
+      top: -15px;                                                                 /* 上移15px */
+      left: 50%;                                                                  /* 水平居中 -->
+      transform: translateX(-50%);                                                /* 居中偏移修正 -->
+      color: #d9a566;                                                             /* 金色 -->
+      font-size: 1.5rem;                                                          /* 字号1.5rem ≈ 24px -->
+      letter-spacing: 10px;                                                       /* 字符间距10px -->
+    }
+
+    /* ===== 手机端适配 ===== */
+      @media (max-width: 768px)  }                                                   /* 当屏幕宽度 ≤ 768px -->
+      h1 {
+        font-size: 2.5rem;                                                        /* 标题缩小到2.5rem ≈ 40px -->
+      }
+
+      h2 {
+        font-size: 1.5rem;                                                        /* 副标题缩小到1.5rem ≈ 24px -->
+      }
+
+      .section-content {
+        grid-template-columns: 1fr;                                               /* 内容卡片单列 -->
+      }
+
+      .flying-apsaras {
+        transform: scale(0.7);                                                    /* 飞天缩小到0.7倍 -->
+      }
+
+      .camel {
+        transform: scale(0.7);                                                    /* 骆驼缩小到0.7倍 -->
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- ===== 视差滚动容器 ===== -->
+<div class="parallax-container">                                                <!-- 视差根容器 -->
+  <div class="parallax-layer layer-back"></div>                                 <!-- 远景层：橙红渐变 -->
+  <div class="parallax-layer layer-middle"></div>                               <!-- 中景层：光斑纹理 -->
+
+  <div class="parallax-layer layer-front">                                      <!-- 前景层：用户可见内容 -->
+    <div class="cave-background"></div>                                         <!-- 洞窟背景图+暗角遮罩 -->
+    <div class="sand-dunes"></div>                                              <!-- 沙丘纹理 -->
+
+    <!-- 骆驼动画 -->
+    <div class="camel"></div>                                                   <!-- 骆驼SVG，30秒横向循环 -->
+
+    <!-- 初始4朵云烟 -->
+    <div class="smoke" style="left: 20%; animation-delay: 0s;"></div>           <!-- 云烟1 -->
+    <div class="smoke" style="left: 40%; animation-delay: 2s;"></div>           <!-- 云烟2 -->
+    <div class="smoke" style="left: 60%; animation-delay: 4s;"></div>           <!-- 云烟3 -->
+    <div class="smoke" style="left: 80%; animation-delay: 6s;"></div>           <!-- 云烟4 -->
+
+    <!-- 佛光 -->
+    <div class="buddha-light" style="top: 30%; left: 30%;"></div>               <!-- 佛光1 -->
+    <div class="buddha-light" style="top: 60%; right: 30%;"></div>              <!-- 佛光2 -->
+
+    <!-- 主标题 -->
+    <div class="title-content">                                                 <!-- 标题容器，初始隐藏 -->
+      <h1>敦煌艺术</h1>                                                         <!-- 主标题文字 -->
+      <h2>丝路明珠 · 千年佛宫</h2>                                              <!-- 副标题文字 -->
+    </div>
+
+    <!-- 向下滚动提示 -->
+    <div class="scroll-indicator">向下滚动探索</div>                             <!-- 带弹跳动画的箭头 -->
+  </div>
+
+  <!-- 飞天装饰 -->
+  <div class="flying-apsaras" style="top: 20%; left: 10%;"></div>               <!-- 飞天装饰1 -->
+  <div class="flying-apsaras" style="top: 30%; right: 15%; transform: scaleX(-1);"></div> <!-- 飞天装饰2（镜像） -->
+
+  <!-- 角落花纹 -->
+  <div class="decoration" style="top: 15%; right: 10%;"></div>                  <!-- 花纹1 -->
+  <div class="decoration" style="top: 70%; left: 5%; transform: rotate(45deg);"></div> <!-- 花纹2（旋转45度） -->
+</div>
+
+<!-- ===== 正文内容区域 ===== -->
+<div class="content-sections">                                                  <!-- 滚动后正文背景 -->
+  <!-- 莫高窟 -->
+  <div class="section">                                                         <!-- 内容块，初始隐藏 -->
+    <h3 class="section-title">莫高窟</h3>                                       <!-- 小节标题 -->
+    <div class="section-content">                                               <!-- 网格容器 -->
+      <div class="text-content">                                                <!-- 段落文字 -->
+        <p>莫高窟，俗称千佛洞，坐落在河西走廊西端的敦煌。它始建于十六国的前秦时期，历经十六国、北朝、隋、唐、五代、西夏、元等历代的兴建，形成巨大的规模，有洞窟735个，壁画4.5万平方米、泥质彩塑2415尊，是世界上现存规模最大、内容最丰富的佛教艺术圣地。</p>
+        <p>莫高窟与河南洛阳龙门石窟、山西大同云冈石窟并称中国三大石窟，后加麦积山石窟称四大石窟。1961年，莫高窟被中华人民共和国国务院公布为第一批全国重点文物保护单位之一。1987年，莫高窟被列为世界文化遗产。</p>
+      </div>
+      <div class="feature-card">                                                <!-- 卡片区块 -->
+        <h3>建筑特色</h3>
+        <p>莫高窟窟形形制主要有禅窟、中心塔柱窟、殿堂窟、中心佛坛窟、四壁三龛窟、大像窟、涅槃窟等各具特色的类型。窟外原有木造殿宇，并有走廊、栈道等相连，现多已不存。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 飞天壁画 -->
+  <div class="section">
+    <h3 class="section-title">飞天壁画</h3>
+    <div class="section-content">
+      <div class="feature-card">
+        <h3>艺术演变</h3>
+        <p>敦煌飞天的风格特征是不长翅膀，不生羽毛，借助云彩而不依靠云彩，而是凭借飘曳的衣裙，飞舞的彩带凌空翱翔。千姿百态，千变万化。这是在本民族传统的基础上，吸收、融合了外来飞天艺术的成就，发展创作出来的敦煌飞天形象。</p>
+      </div>
+      <div class="text-content">
+        <p>飞天是敦煌艺术的标志。敦煌地区约5OO多个石窟中，都绘有大量的飞天形象。飞天是主管歌舞的神，她们在佛国世界里尽情飞翔，借着飘逸的衣裙、飞舞的彩带凌空翱翔，演奏仙乐，洒下鲜花。</p>
+        <p>敦煌飞天从艺术形象上说，它不是一种文化的艺术形象，而是多种文化的复合体。飞天的故乡虽在印度，但敦煌飞天却是印度文化、西域文化、中原文化共同孕育成的。它是印度佛教天人和中国道教羽人、西域飞天和中原飞天长期交流、融合为一，具有中国文化特色的飞天。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 藏经洞 -->
+  <div class="section">
+    <h3 class="section-title">藏经洞</h3>
+    <div class="section-content">
+      <div class="text-content">
+        <p>藏经洞是莫高窟17窟的俗称。此窟原为唐宣宗大中五年（851年）时开凿，为当时河西都僧统洪辩的影窟。公元11世纪，西夏统治敦煌前夕，莫高窟的僧徒们考虑到战争的灾难，于是就把寺院历代保存下来的经卷、文书、档案以及佛像画等全部封存在此洞里，然后外筑补壁，并绘壁画掩人耳目。</p>
+        <p>后因僧徒也逃战争之难未归，洞窟颓废，年久日深，洞窟甬道被风沙淤塞，因此鲜为人知。</p>
+      </div>
+      <div class="feature-card">
+        <h3>发现与流失</h3>
+        <p>清光绪二十六年（1900年），莫高窟道士王圆箓在清理积沙时，无意中发现了藏经洞，并挖出了公元四至十一世纪的佛教经卷、社会文书、刺绣、绢画、法器等文物5万余件。这一发现为研究中国及中亚古代历史、地理、宗教、经济、政治、民族、语言、文学、艺术、科技提供了数量极其巨大、内容极为丰富的珍贵资料。</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 页脚 ===== -->
+<footer>                                                                        <!-- 页脚 -->
+  <p>探索敦煌艺术 · 传承中华文明</p>                                            <!-- 口号 -->
+  <p>© 2023 敦煌文化保护与研究</p>                                              <!-- 版权 -->
+</footer>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {                    <!-- 页面加载完成后执行 -->
+    // 显示标题内容
+    setTimeout(() => {                                                          <!-- 0.5秒后淡入标题 -->
+      document.querySelector('.title-content').style.opacity = '1';
+      document.querySelector('.title-content').style.transform = 'translateY(0)';
+    }, 500);
+
+    // 鼠标移动效果
+    document.addEventListener('mousemove', function(e) {                        <!-- 监听鼠标移动 -->
+      const x = e.clientX / window.innerWidth;                                  <!-- 鼠标横向比例0-1 -->
+      const y = e.clientY / window.innerHeight;                                 <!-- 鼠标纵向比例0-1 -->
+
+      // 移动背景层
+      document.querySelector('.layer-back').style.transform = `translateZ(-3px) scale(4) translate(${x * 20}px, ${y * 20}px)`;
+      document.querySelector('.layer-middle').style.transform = `translateZ(-1px) scale(2) translate(${x * 40}px, ${y * 40}px)`;
+
+      // 移动飞天元素
+      const apsaras = document.querySelectorAll('.flying-apsaras');
+      apsaras.forEach(apsara => {
+        const speed = 10;
+        const isFlipped = apsara.style.transform.includes('scaleX');
+        apsara.style.transform = `translate(${x * speed}px, ${y * speed}px) ${isFlipped ? 'scaleX(-1)' : ''}`;
+      });
+
+      // 移动佛光效果
+      const lights = document.querySelectorAll('.buddha-light');
+      lights.forEach(light => {
+        const speed = 5;
+        light.style.transform = `translate(${x * -speed}px, ${y * -speed}px) scale(1.1)`;
+      });
+    });
+
+    // 滚动动画效果
+    const sections = document.querySelectorAll('.section');                     <!-- 所有内容块 -->
+    function checkScroll() {                                                    <!-- 检测滚动位置 -->
+      sections.forEach(section => {
+        const sectionTop = section.getBoundingClientRect().top;                 <!-- 块顶部到视口距离 -->
+        const windowHeight = window.innerHeight;                                <!-- 视口高度 -->
+        if (sectionTop < windowHeight * 0.75) {                                 <!-- 进入视口75%区域 -->
+          section.classList.add('visible');                                     <!-- 添加可见类，触发淡入 -->
+        }
+      });
+    }
+    checkScroll();                                                              <!-- 首次加载执行一次 -->
+    window.addEventListener('scroll', checkScroll);                             <!-- 滚动时持续检测 -->
+
+    // 滚动指示器点击事件
+    document.querySelector('.scroll-indicator').addEventListener('click', function() { <!-- 点击向下箭头 -->
+      window.scrollTo({ top: window.innerHeight, behavior: 'smooth' });         <!-- 平滑滚动一屏 -->
+    });
+
+    // 添加额外的云烟效果
+    function createSmoke() {                                                    <!-- 生成新云烟函数 -->
+      const container = document.querySelector('.layer-front');                 <!-- 目标容器 -->
+      const smoke = document.createElement('div');                              <!-- 创建div -->
+      smoke.className = 'smoke';                                                <!-- 添加类名 -->
+      smoke.style.left = Math.random() * 100 + '%';                             <!-- 随机横向位置 -->
+      smoke.style.animationDelay = Math.random() * 8 + 's';                     <!-- 随机延迟0-8秒 -->
+      container.appendChild(smoke);                                             <!-- 插入DOM -->
+      setTimeout(() => smoke.remove(), 8000);                                   <!-- 8秒后移除DOM -->
+    }
+    setInterval(createSmoke, 2000);                                             <!-- 每2秒生成一朵 -->
+  });
+</script>
+</body>
+</html>

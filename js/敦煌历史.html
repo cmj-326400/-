@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title></title>
+		<style>
+			* {
+				padding: 0;
+				margin: 0;
+			}
+			
+			.back-button {
+			    position: fixed;
+			    top: 20px;
+			    left: 20px;
+			    color: #fff;
+			    font-size: 16px;
+			    text-decoration: none;
+			    z-index: 1000;
+			    
+			    padding: 8px 15px;
+			    border-radius: 4px;
+			    transition: all 0.3s ease;
+			}
+			
+			.back-button:hover {
+			    background: rgba(0,0,0,0.8);
+			    transform: translateX(-3px);
+			}
+			
+			.shell {
+				width:100%;
+				position: relative;
+				padding: 80px 0;
+				transition: 0.3s ease 0s;
+				background-attachment: fixed;
+				background-size: cover;
+			}
+			
+			.shell:before {
+				position:absolute;
+				left:0;
+				top: 0;
+				width:100%;
+				height:100%;
+				background: rgba(99, 99, 99, 0.8);
+				content:"";
+			}
+			
+			.header {
+				width: 100%;
+				text-align: center;
+				margin-bottom: 80px;
+				position: relative;
+			}
+			
+			.title {
+				color: #fff;
+				font-size:46px;
+				font-weight:normal;
+				margin:0;
+			}
+			
+			.timeline {
+				display: flex;
+				margin: 0 auto;
+				flex-direction: column;
+				max-width: 700px;
+				position:relative;
+			}
+			
+			.content-title {
+				font-weight: normal;
+				font-size: 66px;
+				margin: -10px 0 0 0 ;
+				transition: 0.4s;
+				padding: 0 10px;
+				box-sizing: border-box;
+				color: #fff;
+			}
+			
+			.content-desc {
+				margin: 0;
+				font-size: 15px;
+				box-sizing: border-box;
+				color: rgba(255, 255, 255, 0.7);
+				line-height: 25px;
+			}
+			
+			.timeline:before{
+				position: absolute;
+				left: 50%;
+				width: 2px;
+				height: 100%;
+				margin-left: -1px;
+				content: "";
+				background: rgba(255, 255, 255, 0.07);
+			}
+			
+			.item {
+				padding: 40px 0;
+				opacity: 0.3;
+				filter: blur(2px);
+				transition: 0.5s;
+				box-sizing: border-box;
+				width: calc(50% - 40px);
+				display: flex;
+				position: relative;
+				transform: translateY(-80px);
+			}
+			
+			.item:before{
+				content: attr(data-text);
+				letter-spacing: 3px;
+				width: 100%;
+				position: absolute;
+				color: rgba(255, 255, 255, 0.5);
+				font-size: 13px;
+				border-left: 2px solid rgba(255, 255, 255, 0.5);
+				top: 70%;
+				margin-top: -5px;
+				padding-left: 15px;
+				opacity: 0;
+				right: calc(-100% - 56px);
+				font: 900 20px '';
+				letter-spacing: 5px;
+				
+			}
+			
+			.item:nth-child(even) {
+				align-self: flex-end;
+			}
+			
+			.item:nth-child(even):before {
+				right: auto;
+				text-align: right;
+				left: calc(-100% - 56px);
+				padding-left:0;
+				border-left:none;
+				boder-right:2px solid rgba(255, 255, 255, 0.5);
+				padding-right: 15px;
+			}
+			
+			.item--active{
+				opacity: 1;
+				transform: translateY(0);
+				filter: blur(0px);
+			}
+			
+			.item--active:before {
+				top:50%;
+				transition: 0.3s all 0.2s;
+				opacity: 1;
+			}
+			
+			.item--active .content-title{
+				margin: -50px 0 20px 0;
+			}
+			
+			.img{
+				max-width: 100%;
+				box-shadow: 0 10px 15px rgba(0, 0, 0, 0.4);
+			}
+			
+			.subtitle {
+				color: rgba(255, 255, 255, 0.5);
+				font-size: 16px;
+				letter-spacing: 5px;
+				margin: 10px 0 0 0;
+				font-weight: normal;
+			}
+			
+			.footer{
+				padding: 95px 0;
+				text-align: center;
+			}
+			
+			.footer a{
+				color: #999;
+				display: inline-block;
+			}
+			
+			@media only screen and (max-width:767px) {
+				.item{
+					align-self: baseline !important;
+					width:100%;
+					padding: 0 30px 150px 80px;
+				}
+				
+				.item:before {
+					left: 10px !important;
+					padding: 0 !important;
+					top: 50px;
+					text-align: center !important;
+					width:60px;
+					border:none !important;
+				}
+				
+				.item:last-child {
+					padding-bottom: 40px;
+				}
+			}
+			
+			@media only screen and (max-width:767px) {
+				.timeline:before{
+					left: 40px;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<!-- 新增的返回按钮 -->
+		<a href="../目录.html" class="back-button">← 返回</a>
+		    
+		
+		<div class="shell" id="shell">
+			<div class="header">
+				<h2 class="title">敦煌发展</h2>
+				<h3 class="subtitle">历史进程</h3>
+			</div>
+			<div class="timeline">
+				<div class="item" data-text="大禹开始治水">
+					<div class="content">
+						<img src="../img/大禹治水.jpg" alt="" class="img">
+						<h2 class="content-title">舜时代</h2>
+						<p class="content-desc">
+							大禹是夏朝开国君主，奉命治理黄河洪水。他采用疏导之法，历时13年，三过家门而不入，最终成功治水，奠定夏朝基业，被后世尊为治水圣王。
+						</p>
+					</div>
+				</div>
+				
+				<div class="item" data-text="河南地区发起征伐">
+					<div class="content">
+						<img src="../img/征伐.jpg" alt="" class="img">
+						<h2 class="content-title">公元前967</h2>
+						<p class="content-desc">
+							公元前967年，周穆王时期，曾对河南地区的淮夷等部落发动征伐，以巩固周王朝对东方的控制。此战强化了周王室在中原的权威。
+						</p>
+					</div>
+				</div>
+				
+				<div class="item" data-text="春秋时代开启">
+					<div class="content">
+						<img src="../img/春秋.jpg" alt="" class="img">
+						<h2 class="content-title">公元前771</h2>
+						<p class="content-desc">
+							公元前771年，犬戎攻破镐京，西周灭亡。周平王东迁洛邑，史称东周，开启春秋时代。诸侯争霸，礼崩乐坏，百家争鸣。
+						</p>
+					</div>
+				</div>
+				
+				<div class="item" data-text="楚汉争霸">
+					<div class="content">
+						<img src="../img/楚汉争霸.jpg" alt="" class="img">
+						<h2 class="content-title">公元前205-202</h2>
+						<p class="content-desc">
+							楚汉争霸是刘邦与项羽为争夺天下进行的战争。刘邦重用韩信、张良，最终垓下之战击败项羽，建立汉朝，开启四百年大汉基业。
+						</p>
+					</div>
+				</div>
+				
+				<div class="item" data-text="敦煌建郡">
+					<div class="content">
+						<img src="../img/郡府.jpg" alt="" class="img">
+						<h2 class="content-title">公元前111</h2>
+						<p class="content-desc">
+							敦煌于西汉元鼎六年正式设郡，是汉武帝开拓河西走廊、经营西域的重要战略据点，成为丝绸之路上的国际商贸与文化中心，以莫高窟闻名于世。
+						</p>
+					</div>
+				</div>
+				
+				
+				<div class="item" data-text="解忧和亲敦煌出关">
+					<div class="content">
+						<img src="../img/敦煌出关.jpg" alt="" class="img">
+						<h2 class="content-title">公元前100</h2>
+						<p class="content-desc">
+							解忧公主是西汉和亲公主，汉武帝时期远嫁乌孙，经敦煌出关。她在西域生活50余年，促进汉朝与乌孙联盟，维护丝路畅通，成为汉代和亲外交的典范。
+						</p>
+					</div>
+				</div>
+				
+				
+				<div class="item" data-text="班超入玉门关">
+					<div class="content">
+						<img src="../img/玉门关.jpg" alt="" class="img">
+						<h2 class="content-title">102年</h2>
+						<p class="content-desc">
+							班超投笔从戎，经营西域三十载，平定诸国。永元十四年，年近七旬的班超获准东归，至玉门关时感慨万千。其"不敢望到酒泉郡，但愿生入玉门关"的慨叹，成为戍边将士的千古绝唱。
+						</p>
+					</div>
+				</div>
+				
+				<div class="item" data-text="仙岩寺开凿">
+					<div class="content">
+						<img src="../img/仙岩寺.jpg" alt="" class="img">
+						<h2 class="content-title">353年</h2>
+						<p class="content-desc">
+							仙岩寺始建于唐代贞观年间，因山间奇岩如仙境而得名。历代多次修葺，现存建筑多为清代风格，以摩崖石刻和飞瀑流泉闻名，是浙南著名佛教胜地。
+						</p>
+					</div>
+				</div>
+				
+				<div class="item" data-text="乐尊开创莫高窟">
+					<div class="content">
+						<img src="../img/莫高窟.jpg" alt="" class="img">
+						<h2 class="content-title">366年</h2>
+						<p class="content-desc">
+							乐尊是莫高窟的开创者。公元366年，他云游至敦煌鸣沙山，见佛光显现，遂在此开凿第一个洞窟修行，由此开启了莫高窟延续千年的佛教艺术辉煌。
+						</p>
+					</div>
+				</div>
+				
+				<div class="item" data-text="敦煌建郡">
+					<div class="content">
+						<img src="../img/敦煌美图.jpg" alt="" class="img">
+						<h2 class="content-title">439年</h2>
+						<p class="content-desc">
+							北凉沮渠氏政权被北魏攻灭，敦煌正式纳入北魏版图。此后北魏在此设敦煌镇，加强统治，促进佛教艺术发展，为莫高窟的兴盛奠定基础。
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+		<script>
+			
+			(function ($){
+				$.fn.timeline = function() {
+					var selectors ={
+						id:$(this),
+						item: $(this).find(".item"),
+						activeClass: "item--active",
+						img: ".img"
+					};
+					//将第一个时间轴项目激活，并设置时间轴背景图片为第一个项目的图片
+					selectors.item.eq(0).addClass(selectors.activeClass);
+					selectors.id.css(
+					     "background-image",
+					    "url("+
+					    selectors.item.first()
+					         .find(selectors.img)
+						     .attr("src")+
+					    ")"
+					);
+					//获取时间轴项目的总数
+					var itemLength = selectors.item.length;
+					//当前页面滚动时，触发滚动事件。
+					$(window).scroll(function(){
+						var max,min;
+						//获取页面滚动的距离
+						var pos = $(this).scrollTop();
+						selectors.item.each(function(i){
+							//获取当前事件轴项目的最小和最大高度
+							min = $(this).offset().top;
+							max = $(this).height() + $(this).offset().top;
+							var that = $(this);
+							//如果滚动到最后一个项目，并超过当前项目的一半高度，将最后一个项目设置为激活状态，并设置背景图片为最后一个项目
+							//的图片
+							if (i == itemLength - 2 && pos > min + $(this).height() / 2){
+								selectors.item.removeClass(selectors.activeClass);
+								selectors.id.css(
+								     "background-image",
+									 "url(" +
+									 selectors.item.last()
+									     .find(selectors.img)
+										 .attr("src") +
+									")"
+									);
+									selectors.item.last().addClass(selectors.activeClass);
+								
+							}
+							//如果当前滚动位置在当前项目的最小和最大高度之间
+							//则将当前项目设置为激活状态，并设置背景图片为当前项目图片
+							else if(pos <= max - 10 && pos >= min){
+								selectors.id.css(
+								     "background-image",
+									 "url(" +
+									 $(this)
+									 .find(selectors.img)
+									 .attr("src") +
+									 ")"
+								);
+								selectors.item.removeClass(selectors.activeClass);
+								$(this).addClass(selectors.activeClass);
+							}
+						});
+					});
+				};
+			})(jQuery)
+			/*调用timeline插件并传入时间轴的ID作为参数，将启用时间轴插件并为时间轴绑定滚动事件。*/
+			$("#shell").timeline();
+		</script>
+		
+		
+	</body>
+</html>
